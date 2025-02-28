@@ -20,8 +20,8 @@ spring:
 
   data:
     mongodb:
-      #uri: mongodb://${MONGO_HOST:localhost}:27017/items # Use environment variable with default
-      uri: mongodb://localhost:27017/items # Use environment variable with default
+      #uri: mongodb://${MONGO_HOST:localhost}:27017/itemsdb # Use environment variable with default
+      uri: mongodb://localhost:27017/itemsdb # Use environment variable with default
 
   kafka:
     #bootstrap-servers: ${KAFKA_HOST:kafka}:9092 # Use environment variable with default
