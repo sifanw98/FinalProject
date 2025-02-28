@@ -4,9 +4,9 @@ spring:
 
   datasource:
     #url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/itemsdb # Use environment variable with default
-    url: jdbc:mysql://localhost:3306/itemsdb
-    username: username
-    password: password
+    url: jdbc:mysql://localhost:3307/itemsdb
+    username: root
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
