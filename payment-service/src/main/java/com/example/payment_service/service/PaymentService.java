@@ -28,7 +28,7 @@ public class PaymentService {
         }
 
         // Simulate payment processing
-        payment.setStatus("SUCCESS");
+        payment.setStatus(PaymentStatus.SUCCESS);
         payment.setIdempotencyKey(idempotencyKey); // Store the idempotency key
         paymentRepository.save(payment);
 
@@ -37,7 +37,7 @@ public class PaymentService {
                 payment.getPaymentId(),
                 payment.getOrderId(),
                 payment.getAmount(),
-                payment.getStatus()
+                payment.getStatus().toString()  // Convert enum to string for Kafka
         );
         kafkaTemplate.send("payment-processed", event);
 
@@ -47,21 +47,21 @@ public class PaymentService {
     public Payment updatePayment(String paymentId, Payment paymentDetails) {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
-        payment.setStatus(paymentDetails.getStatus());
+        payment.setStatus(paymentDetails.getStatus());  // Use PaymentStatus enum
         return paymentRepository.save(payment);
     }
 
     public Payment reversePayment(String paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
-        payment.setStatus("REFUNDED");
+        payment.setStatus(PaymentStatus.REFUNDED);  // Use PaymentStatus enum
 
         // Publish RefundProcessedEvent
         RefundProcessedEvent event = new RefundProcessedEvent(
                 "REFUND_" + paymentId, // Generate refund ID
                 paymentId,
                 payment.getAmount(),
-                payment.getStatus()
+                payment.getStatus().toString() // Convert enum to string for Kafka
         );
         kafkaTemplate.send("refund-processed", event);
 

@@ -10,13 +10,16 @@ public class Payment {
     private String paymentId;
     private String orderId;
     private BigDecimal amount;
-    private String status; // e.g., "SUCCESS", "FAILED", "REFUNDED"
+
+    @Enumerated(EnumType.STRING) // Store enum as a string in the database
+    private PaymentStatus status; // e.g., "SUCCESS", "FAILED", "REFUNDED"
+
     private String idempotencyKey;
 
     public Payment() {
     }
 
-    public Payment(String paymentId, String orderId, BigDecimal amount, String status, String idempotencyKey) {
+    public Payment(String paymentId, String orderId, BigDecimal amount, PaymentStatus status, String idempotencyKey) {
         this.paymentId = paymentId;
         this.orderId = orderId;
         this.amount = amount;
@@ -48,11 +51,11 @@ public class Payment {
         this.amount = amount;
     }
 
-    public String getStatus() {
+    public PaymentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(PaymentStatus status) {
         this.status = status;
     }
 
