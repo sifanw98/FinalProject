@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ItemService {
@@ -66,7 +67,7 @@ public class ItemService {
      * @param orderId  The unique ID of the order.
      */
     @Transactional
-    public void reserveItems(String itemId, int quantity, String orderId) {
+    public void reserveItems(String itemId, int quantity, UUID orderId) {
         logger.info("Reserving {} units of item {} for order {}", quantity, itemId, orderId);
 
         // Fetch the inventory for the item
@@ -117,7 +118,7 @@ public class ItemService {
      * @param orderId  The unique ID of the order.
      */
     @Transactional
-    public void releaseItems(String itemId, int quantity, String orderId) {
+    public void releaseItems(String itemId, int quantity, UUID orderId) {
         logger.info("Releasing {} units of item {} for order {}", quantity, itemId, orderId);
 
         // Fetch the inventory for the item
