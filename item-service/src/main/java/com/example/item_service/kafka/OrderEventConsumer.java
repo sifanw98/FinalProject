@@ -46,4 +46,37 @@ public class OrderEventConsumer {
             logger.error("Error processing OrderCanceledEvent: {}", e.getMessage(), e);
         }
     }
+
+    @KafkaListener(topics = "order-updated", groupId = "item-service")
+    public void handleOrderUpdated(OrderUpdatedEvent event) {
+        logger.info("Received OrderUpdatedEvent: {}", event);
+        try {
+            // Process each item change in the order
+            for (OrderUpdatedEvent.OrderItemChange itemChange : event.getItemChanges()) {
+                switch (itemChange.getChangeType()) {
+                    case ADD:
+                        // Reserve inventory for newly added items
+                        itemService.reserveItems(itemChange.getItemId(), itemChange.getNewQuantity(), event.getOrderId());
+                        break;
+                    case REMOVE:
+                        // Release inventory for removed items
+                        itemService.releaseItems(itemChange.getItemId(), itemChange.getOldQuantity(), event.getOrderId());
+                        break;
+                    case UPDATE:
+                        // Adjust inventory for updated item quantities
+                        itemService.adjustInventoryForUpdatedOrder(
+                                itemChange.getItemId(),
+                                itemChange.getOldQuantity(),
+                                itemChange.getNewQuantity(),
+                                event.getOrderId()
+                        );
+                        break;
+                    default:
+                        logger.warn("Unknown change type: {}", itemChange.getChangeType());
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error processing OrderUpdatedEvent: {}", e.getMessage(), e);
+        }
+    }
 }

@@ -153,4 +153,47 @@ public class ItemService {
         );
         inventoryEventProducer.publishInventoryUpdate(updatedEvent);
     }
+
+    @Transactional
+    public void adjustInventoryForUpdatedOrder(String itemId, int oldQuantity, int newQuantity, UUID orderId) {
+        logger.info("Adjusting inventory for updated order. Item: {}, Old Quantity: {}, New Quantity: {}, Order: {}", itemId, oldQuantity, newQuantity, orderId);
+
+        Inventory inventory = inventoryRepository.findByItemId(itemId)
+                .orElseThrow(() -> {
+                    logger.error("Inventory not found for item {}", itemId);
+                    return new RuntimeException("Inventory not found");
+                });
+
+        // Calculate the difference between the old and new quantities
+        int quantityDifference = newQuantity - oldQuantity;
+
+        if (quantityDifference > 0) {
+            // If the new quantity is greater, reserve additional units
+            if (inventory.getAvailableUnits() < quantityDifference) {
+                logger.warn("Insufficient inventory for item {}. Available: {}, Requested: {}", itemId, inventory.getAvailableUnits(), quantityDifference);
+                throw new RuntimeException("Insufficient inventory");
+            }
+            inventory.setReservedUnits(inventory.getReservedUnits() + quantityDifference);
+            inventory.setAvailableUnits(inventory.getAvailableUnits() - quantityDifference);
+        } else if (quantityDifference < 0) {
+            // If the new quantity is smaller, release excess units
+            if (inventory.getReservedUnits() < -quantityDifference) {
+                logger.warn("Insufficient reserved units for item {}. Reserved: {}, Requested: {}", itemId, inventory.getReservedUnits(), -quantityDifference);
+                throw new RuntimeException("Insufficient reserved units");
+            }
+            inventory.setReservedUnits(inventory.getReservedUnits() + quantityDifference); // quantityDifference is negative
+            inventory.setAvailableUnits(inventory.getAvailableUnits() - quantityDifference); // quantityDifference is negative
+        }
+
+        inventoryRepository.save(inventory);
+
+        logger.info("Successfully adjusted inventory for updated order. Item: {}, Old Quantity: {}, New Quantity: {}, Order: {}", itemId, oldQuantity, newQuantity, orderId);
+
+        // Publish InventoryUpdatedEvent
+        inventoryEventProducer.publishInventoryUpdate(new InventoryUpdatedEvent(
+                itemId,
+                inventory.getAvailableUnits(),
+                inventory.getReservedUnits()
+        ));
+    }
 }
