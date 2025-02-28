@@ -3,9 +3,9 @@ package com.example.item_service.kafka;
 import java.util.Objects;
 
 public class InventoryEvent {
-    private String itemId; // Unique ID of the item
-    private int availableUnits; // Updated available units
-    private int reservedUnits; // Updated reserved units
+    private String itemId;
+    private int availableUnits;
+    private int reservedUnits;
 
     // Default constructor (required for deserialization)
     public InventoryEvent() {
