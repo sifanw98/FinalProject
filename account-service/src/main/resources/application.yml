@@ -24,44 +24,44 @@ spring:
         data-locations: classpath:data.sql
     datasource:
       initialization-mode: always
-#  kafka:
-#    kafka:
-#      bootstrap-servers: localhost:9092
-#      consumer:
-#        group-id: account-service-group
-#        auto-offset-reset: earliest
-#        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#        value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-#        properties:
-#          spring.json.trusted.packages: "*"
-#      producer:
-#        key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-#eureka:
-#  client:
-#    service-url:
-#      defaultZone: http://localhost:8761/eureka/
-#    register-with-eureka: true
-#    fetch-registry: true
-#  instance:
-#    prefer-ip-address: true
-#    instance-id: ${spring.application.name}:${server.port}
+  kafka:
+    enabled: true
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: account-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-#feign:
-#  client:
-#    config:
-#      default:
-#        connectTimeout: 5000
-#        readTimeout: 5000
-#        loggerLevel: basic
-#  compression:
-#    request:
-#      enabled: true
-#    response:
-#      enabled: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
 
-
+feign:
+  client:
+    enabled: false
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
 
 jwt:
   secret: yourSecretKey

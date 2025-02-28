@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.chuwa.learn.account_service.event.producer.AccountEventProducer;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -26,18 +27,21 @@ public class UserServiceImpl implements UserService {
     private final UserConverter userConverter;
     private final AddressConverter addressConverter;
     private final PaymentMethodConverter paymentMethodConverter;
+    private final AccountEventProducer eventProducer;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
                            UserConverter userConverter,
                            AddressConverter addressConverter,
-                           PaymentMethodConverter paymentMethodConverter) {
+                           PaymentMethodConverter paymentMethodConverter,
+                           AccountEventProducer eventProducer) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userConverter = userConverter;
         this.addressConverter = addressConverter;
         this.paymentMethodConverter = paymentMethodConverter;
+        this.eventProducer = eventProducer;
     }
 
 
@@ -75,6 +79,7 @@ public class UserServiceImpl implements UserService {
         user.setPaymentMethods(paymentMethodConverter.toPaymentMethodSet(userDTO.getPaymentMethods()));
 
         userRepository.save(user);
+        eventProducer.publishUserRegistered(user);
 
         UserDTO savedUserDTO = userConverter.toUserDTO(user);
         savedUserDTO.setPassword(null);

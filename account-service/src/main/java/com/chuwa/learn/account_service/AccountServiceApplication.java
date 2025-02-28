@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients
+//@EnableFeignClients
 public class AccountServiceApplication {
 
 	public static void main(String[] args) {
