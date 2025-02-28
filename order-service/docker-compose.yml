@@ -11,11 +11,21 @@ services:
     environment:
       - CASSANDRA_CLUSTER_NAME=ShoppingCluster
       - CASSANDRA_DC=datacenter1
+      - CASSANDRA_BROADCAST_RPC_ADDRESS=cassandra
     healthcheck:
-      test: ["CMD", "cqlsh", "-e", "DESCRIBE KEYSPACES"]
+      test: [ "CMD", "cqlsh", "-e", "DESCRIBE KEYSPACES" ]
       interval: 30s
       timeout: 10s
       retries: 5
+
+  cassandra-init:
+    image: cassandra:latest
+    container_name: cassandra-init
+    depends_on:
+      - cassandra
+    volumes:
+      - ./init.cql:/init.cql
+    entrypoint: ["sh", "-c", "sleep 30 && cqlsh cassandra -f /init.cql"]
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -42,10 +52,16 @@ services:
     depends_on:
       cassandra:
         condition: service_healthy
+      cassandra-init:
+        condition: service_started
       kafka:
         condition: service_started
     environment:
-      SPRING_CASSANDRA_CONTACT_POINTS: cassandra
+      SPRING_DATA_CASSANDRA_CONTACT_POINTS: cassandra
+      SPRING_DATA_CASSANDRA_PORT: 9042
+      SPRING_DATA_CASSANDRA_KEYSPACE_NAME: orders_keyspace
+      SPRING_DATA_CASSANDRA_LOCAL_DATACENTER: datacenter1
+      SPRING_DATA_CASSANDRA_SCHEMA_ACTION: CREATE_IF_NOT_EXISTS
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8080:8080"
