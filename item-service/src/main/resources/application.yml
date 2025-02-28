@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: item-service
+
+  datasource:
+    #url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/itemsdb # Use environment variable with default
+    url: jdbc:mysql://localhost:3306/itemsdb
+    username: username
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  data:
+    mongodb:
+      #uri: mongodb://${MONGO_HOST:localhost}:27017/items # Use environment variable with default
+      uri: mongodb://localhost:27017/items # Use environment variable with default
+
+  kafka:
+    #bootstrap-servers: ${KAFKA_HOST:kafka}:9092 # Use environment variable with default
+    bootstrap-servers: localhost:9092 # Use environment variable with default
+    consumer:
+      group-id: item-service
+      auto-offset-reset: earliest
+    producer:
+      properties:
+        acks: all
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    root: INFO
+    org.springframework.kafka: DEBUG

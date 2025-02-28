@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderCanceledEvent {
-    private String orderId;
+public class InventoryUpdatedEvent {
     private String itemId;
-    private int quantity;
+    private int availableUnits;
+    private int reservedUnits;
 }
