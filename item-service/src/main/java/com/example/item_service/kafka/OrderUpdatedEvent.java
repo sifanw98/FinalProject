@@ -21,7 +21,7 @@ public class OrderUpdatedEvent {
         private String itemId;
         private int oldQuantity;
         private int newQuantity;
-        private ChangeType changeType;          // Type of change (ADD, REMOVE, UPDATE)
+        private ChangeType changeType; // Type of change (ADD, REMOVE, UPDATE)
     }
 
     public enum ChangeType {
