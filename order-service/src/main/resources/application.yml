@@ -1,0 +1,22 @@
+spring:
+  cassandra:
+    contact-points: cassandra
+    port: 9042
+    keyspace-name: orders_keyspace
+    local-datacenter: datacenter1
+    schema-action: CREATE_IF_NOT_EXISTS
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      group-id: order_group
+      auto-offset-reset: earliest
+    producer:
+      properties:
+        acks: all
+
+logging:
+  level:
+    root: INFO
+    org.springframework.kafka: DEBUG
+    org.springframework.data.cassandra: DEBUG
