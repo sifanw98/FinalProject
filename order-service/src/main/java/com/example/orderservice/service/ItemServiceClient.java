@@ -10,5 +10,5 @@ import java.util.UUID;
 @FeignClient(name = "item-service")
 public interface ItemServiceClient {
     @GetMapping("/items/{id}")
-    ItemDTO getItemById(@PathVariable("id") UUID id);
+    ItemDTO getItemById(@PathVariable("id") String id);
 }

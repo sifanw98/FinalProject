@@ -39,7 +39,7 @@ public class OrderService {
 
         List<OrderItem> enrichedItems = orderItems.stream().map(orderItem -> {
             orderItem.setOrderId(orderId); // set foreign key
-            ItemDTO itemDetails = itemServiceClient.getItemById(orderItem.getProductId());
+            ItemDTO itemDetails = itemServiceClient.getItemById(orderItem.getItemId());
             orderItem.setPrice(itemDetails.getPrice());
             return orderItem;
         }).collect(Collectors.toList());

@@ -12,8 +12,8 @@ public class OrderItem {
     @PrimaryKeyColumn(name = "order_id", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private UUID orderId;
 
-    @PrimaryKeyColumn(name = "product_id", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
-    private UUID productId;
+    @PrimaryKeyColumn(name = "item_id", ordinal = 1, type = PrimaryKeyType.CLUSTERED)
+    private String itemId;
 
     @Column("quantity")
     private int quantity;
@@ -29,12 +29,12 @@ public class OrderItem {
         this.orderId = orderId;
     }
 
-    public UUID getProductId() {
-        return productId;
+    public String getItemId() {
+        return itemId;
     }
 
-    public void setProductId(UUID productId) {
-        this.productId = productId;
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 
     public int getQuantity() {
