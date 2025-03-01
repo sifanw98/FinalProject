@@ -1,0 +1,57 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  devtools:
+    restart:
+      enabled: true
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          low-case-service-id: true
+      routes:
+        - id: account-service
+          uri: lb://account-service
+          predicates:
+            - Path=/api/v1/accounts/**
+
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/v1/orders/**
+
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/v1/payments/**
+
+        - id: item-service
+          uri: lb://item-service
+          predicates:
+            - Path=/api/v1/items/**
+
+springdoc:
+  api-docs:
+    enabled: true
+    groups:
+      enabled: true
+  swagger-ui:
+    enabled: true
+    urls:
+      - url: /api/v1/accounts/v3/api-docs
+        name: account-service
+      - url: /api/v1/items/v3/api-docs
+        name: item-service
+      - url: /api/v1/orders/v3/api-docs
+        name: order-service
+      - url: /api/v1/payments/v3/api-docs
+        name: payment-service
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://localhost:8761/eureka/}
