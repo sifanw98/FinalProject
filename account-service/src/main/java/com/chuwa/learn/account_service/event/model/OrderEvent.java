@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class OrderEvent {
     private String eventType;
-    private Long orderId;
+    private String orderId;
     private Long userId;
     private BigDecimal totalAmount;
     private String status;

@@ -46,7 +46,7 @@ public class UserController {
      */
     @GetMapping("/{id}")
     @Operation(summary = "Get user by ID", description = "Retrieve a user by their ID")
-    public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUser(@PathVariable("id") Long id) {
         log.info("Fetching user with id: {}", id);
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)

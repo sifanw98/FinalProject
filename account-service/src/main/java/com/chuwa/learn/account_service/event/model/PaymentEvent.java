@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class PaymentEvent {
     private String eventType;
     private String paymentId;
-    private Long orderId;
+    private String orderId;
     private Long userId;
     private BigDecimal amount;
     private String status;

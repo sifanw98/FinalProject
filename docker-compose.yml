@@ -1,0 +1,117 @@
+services:
+  account-service:
+    build:
+      context: .
+      dockerfile: account-service/Dockerfile
+      args:
+        SERVICE_NAME: account-service
+#    volumes:
+#      - maven-repo:/root/.m2
+#    networks:
+#      - default
+    container_name: account-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      kafka:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+#      service-registry:
+#        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/account_db?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+#      - EUREKA_DEFAULT_ZONE=http://eureka-server:8761/eureka/
+
+  mysql-init:
+    image: mysql:8
+    container_name: mysql-init
+    depends_on:
+      - mysql
+    volumes:
+      - ./account-service/src/main/resources/data.sql:/data.sql
+    entrypoint: ["sh", "-c", "sleep 30 && mysql -h mysql -uroot -proot account_db < /data.sql"]
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: account_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    restart: always
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+
+
+#  service-registry:
+#    build:
+#      context: .
+#      dockerfile: service-registry/Dockerfile
+#    container_name: service-registry
+#    ports:
+#      - "8761:8761"
+#    environment:
+#      - EUREKA_INSTANCE_HOSTNAME=service-registry
+#      - EUREKA_DEFAULT_ZONE=http://service-registry:8761/eureka/
+#    volumes:
+#      - maven-repo:/root/.m2
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+#      start_period: 40s
+#
+#
+#  api-gateway:
+#    build:
+#      context: .
+#      dockerfile: api-gateway/Dockerfile
+#    ports:
+#      - "8080:8080"
+#    volumes:
+#      - maven-repo:/root/.m2
+#    depends_on:
+#      service-registry:
+#        condition: service_healthy
+#    environment:
+#      - EUREKA_DEFAULT_ZONE=http://service-registry:8761/eureka/
+
+
+volumes:
+  mysql-data:
+  maven-repo:
